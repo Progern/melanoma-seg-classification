@@ -1,0 +1,7 @@
+numpy
+pandas
+albumentations
+opencv-python
+jupyter
+segmentation-models-pytorch
+fastai
