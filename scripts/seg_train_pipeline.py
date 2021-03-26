@@ -2,7 +2,7 @@ import torch
 import constants as const
 
 from argparse import ArgumentParser
-from train_utils import *
+from seg_train_utils import *
 
 
 def main(epochs, 

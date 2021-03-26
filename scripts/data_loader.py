@@ -8,15 +8,77 @@ import segmentation_models_pytorch as smp
 import constants as const
 
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from torchvision import transforms as T
+from albumentations.pytorch import transforms as albPt
 
 from skimage import io, transform
+
+
+class MelanomaClassificationDataset(Dataset):
+    """
+    Provides an interface to yield pairs of 
+    image and class data points
+    """
+    
+    def __init__(self, csv_file, root_dir, augmentation=None, preprocessing=None):
+        """
+        Args:
+            csv_file (string): Path to the csv file with annotations.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
+        self.data_csv = csv_file
+        self.image_dir = root_dir
+        self.augmentation = augmentation
+        self.preprocessing = preprocessing
+        
+    def __len__(self):
+        return len(self.data_csv)
+    
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+        
+        img_name = os.path.join(self.image_dir, self.data_csv.iloc[idx]["name"])
+        image = cv2.imread(img_name)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        image_class = self.data_csv.iloc[idx]["class"]
+        
+        if self.augmentation:
+            sample = self.augmentation(image=image)
+            image = sample['image']
+            
+        if self.preprocessing:
+            sample = self.preprocessing(image=image)
+            image = sample['image']
+
+        return image, image_class
+            
+    @staticmethod
+    def get_default_transformation():
+        return alb.Compose([
+                                alb.HorizontalFlip(p=0.5),
+                                alb.VerticalFlip(p=0.5),
+                                alb.ShiftScaleRotate(shift_limit=0.1, scale_limit=0.1,
+                                                     rotate_limit=60, p=0.4, border_mode=0)])
+    
+    @staticmethod
+    def get_default_preprocessing():
+        return alb.Compose([
+            alb.Normalize(mean=[0.485, 0.456, 0.406],
+                        std=[0.229, 0.224, 0.225]),
+            albPt.ToTensor()])
+
+    
+    
 
     
 class MelanomaSegmentationDataset(Dataset):
     """
-    Provides a convenient interface to create
-    a dataset of images and corresponding masks
+    Provides an interface to create
+    a yield of images and corresponding masks
     """
 
     def __init__(self, csv_file, root_dir, augmentation=None, preprocessing=None):
