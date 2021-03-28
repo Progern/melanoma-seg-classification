@@ -98,65 +98,64 @@ def train_model(model, dataloaders, dataset_sizes,
 
     best_f1 = 0.0
     es = EarlyStopping(patience=5)
+    early_stop = False
 
     for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch + 1, num_epochs))
-        print('-' * 50)
+        if not early_stop:
+            print('Epoch {}/{}'.format(epoch + 1, num_epochs))
+            print('-' * 50)
 
-        for phase in ['train', 'val']:
-            if phase == 'train':
-                model.train()  # Set model to training mode
-            else:
-                model.eval()   # Set model to evaluate mode
+            for phase in ['train', 'val']:
+                if phase == 'train':
+                    model.train()  # Set model to training mode
+                else:
+                    model.eval()   # Set model to evaluate mode
 
-            running_loss = 0.0
-            running_corrects = 0
-            running_f1 = 0.0
+                running_loss = 0.0
+                running_f1 = 0.0
 
-            print("{} phase".format(phase))
-            for inputs, labels in tqdm(dataloaders[phase]):
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+                print("{} phase".format(phase))
+                for inputs, labels in tqdm(dataloaders[phase]):
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
 
-                optimizer.zero_grad()
+                    optimizer.zero_grad()
 
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
-                    f1 = metric(outputs.cpu(), labels.cpu())
-                    running_f1 += f1
+                    with torch.set_grad_enabled(phase == 'train'):
+                        outputs = model(inputs)
+                        _, preds = torch.max(outputs, 1)
+                        loss = criterion(outputs, labels)
+                        f1 = metric(outputs.cpu(), labels.cpu())
+                        running_f1 += f1
 
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
+                        if phase == 'train':
+                            loss.backward()
+                            optimizer.step()
 
-                
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
-                
-            if phase == 'train':
-                scheduler.step()
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
-            
-            if phase == 'train':
-                epoch_f1 = running_f1 / (dataset_sizes[phase]  / 8)
-            else:
-                epoch_f1 = running_f1 / dataset_sizes[phase]
+                    running_loss += loss.item() * inputs.size(0)
 
-            print('{} Loss: {:.4f} F1: {:.4f}'.format(
-                phase, epoch_loss, epoch_f1))
+                if phase == 'train':
+                    scheduler.step()
 
-            # Save best model weights
-            if phase == 'val' and epoch_f1 > best_f1:
-                best_f1 = epoch_f1
-                torch.save(model, model_name)
-                
-            # Early stopping
-            if es.step(best_f1):
-                break  
+                epoch_loss = running_loss / dataset_sizes[phase]
+
+                if phase == 'train':
+                    epoch_f1 = running_f1 / (dataset_sizes[phase]  / 8)
+                else:
+                    epoch_f1 = running_f1 / dataset_sizes[phase]
+
+                print('{} Loss: {:.4f} F1: {:.4f}'.format(
+                    phase, epoch_loss, epoch_f1))
+
+                # Save best model weights
+                if phase == 'val' and epoch_f1 > best_f1:
+                    best_f1 = epoch_f1
+                    torch.save(model, model_name)
+
+                # Early stopping
+                if es.step(best_f1):
+                    early_stop = True  
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(

@@ -59,9 +59,10 @@ class MelanomaClassificationDataset(Dataset):
     @staticmethod
     def get_default_transformation():
         return alb.Compose([
-                                alb.HorizontalFlip(p=0.5),
-                                alb.VerticalFlip(p=0.5),
-                                alb.ShiftScaleRotate(shift_limit=0.1, scale_limit=0.1,
+                                alb.HorizontalFlip(p=0.4),
+                                alb.VerticalFlip(p=0.4),
+                                alb.RandomBrightnessContrast(p=0.2),
+                                alb.ShiftScaleRotate(shift_limit=0.3, scale_limit=0.3,
                                                      rotate_limit=60, p=0.4, border_mode=0)])
     
     @staticmethod
