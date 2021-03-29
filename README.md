@@ -67,4 +67,12 @@ python classification_train_pipeline.py --epochs 20 --architecture resnet --clas
 
 ### Inference 🧘‍♀️
 
-This system uses accuracy, precision, recall, confusion matrix and F1 score as evaluation metrics. To run inference and obtain test-time metrics one needs to navigate to ROOT_DIR/notebooks and follow the _classification_inference_pipeline.ipynb_.
+This system uses accuracy, precision, recall, confusion matrix and F1 score as evaluation metrics. To run inference and obtain test-time metrics one needs to navigate to ROOT_DIR/notebooks and follow the _classification_inference_pipeline.ipynb_ notebook.
+
+## Cascade Pipeline: Segmentation + Classification 🚀
+
+To run the whole pipeline at once one needs to navigate to ROOT_DIR/notebooks and follow the _segmentation_and_classification_full_v1_ notebook. One needs to:
+- Change paths to the data if needed in "Load the data" section
+- Change paths to the models in "Restore model checkpoints" section
+
+Further cells will automaticaly process the data first by the segmentation model and then by the classification model. Accuracy, precision, recall, confusion matrix and F1 score are presented as the final evaluation metrics for the pipeline.
