@@ -23,6 +23,7 @@ python seg_train_pipeline.py
 There is a number of input arguments that are optional, and if not provided the system will use the default ones:
 
 - Number of epochs (default: 20) 
+- Device - cuda or cpu (default: cuda)
 - Encoder backbone for the network (default: xception, other options: [any from SMP Zoo](https://github.com/qubvel/segmentation_models#models-and-backbones))
 - Optimizer (default: sgd, other options: adam) 
 - Learning rate (default: 0.0001) 
@@ -41,3 +42,29 @@ This system uses mean Intersection-over-Union (mIoU) as an evaluation metric. To
 ```bash
 python seg_inference_pipeline.py --path ../models/path_to_model_checkpoint.pth --data_path ../dataset/
 ```
+
+## Classification 🐈🐕
+
+### Training 🏋️‍♀️
+
+To train a model you would need to navigate your terminal to ROOT_DIR/scripts and run 
+
+```bash
+python classification_train_pipeline.py
+```
+There is a number of input arguments that are optional, and if not provided the system will use the default ones:
+
+- Number of epochs (default: 20) 
+- Device - cuda or cpu (default: cuda)
+- Pre-trained ImageNet architecture (default: inception, other options: inception, resnet, googlenet)
+- Class weight, for imbalanced classification problems (default: 1, no weighting). The system automatically founds the undersampled class and gives it a bigger weight in the Cross Entropy Loss.
+
+An example of running training with non-default parameters
+
+```bash
+python classification_train_pipeline.py --epochs 20 --architecture resnet --class_weight 3
+```
+
+### Inference 🧘‍♀️
+
+This system uses accuracy, precision, recall, confusion matrix and F1 score as evaluation metrics. To run inference and obtain test-time metrics one needs to navigate to ROOT_DIR/notebooks and follow the _classification_inference_pipeline.ipynb_.
