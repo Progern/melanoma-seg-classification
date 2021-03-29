@@ -4,4 +4,4 @@ albumentations
 opencv-python
 jupyter
 segmentation-models-pytorch
-fastai
+pytorch-lightning

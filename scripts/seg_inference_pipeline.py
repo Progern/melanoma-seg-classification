@@ -113,11 +113,13 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--path", type=str,
                     help="path to the model weights and metadata")
     
-    args = parser.parse_args()
-    path = args.path
+    parser.add_argument("-dp", "--data_path", type=str,
+                    help="path to the dataset")
     
-    if path is not None:
-        path = os.path.join("../models", path)
-        print(path)
-        main(path)
+    args = parser.parse_args()
+    path = args.path if args.path is not None else ""
+    data_path = args.data_path if args.data_path is not None else ""
+    
+    path = os.path.join("../models", path)
+    main(path, data_path)
     
