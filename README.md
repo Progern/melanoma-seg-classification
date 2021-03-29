@@ -11,6 +11,16 @@ The models were trained separately and then combiend in a cascaded pipeline. The
 - The first model provides binary segmentation of the birthmark and yields a mask that denotes the mark. Applying the mask to the input image allows us to propagate only useful signal further in the system.
 - The classification model was trained on masked images, so it expects such an image as an input. Using masked images makes it easier for the model to provide accurate results, as it concentrates only on the birthmark and not on the skin around the mark.
 
+## Dataset
+
+The original dataset is provided by the International Skin Imaging Collaboration (ISIC). It has more than 20,000 images of birthmarks with segmentation masks and metadata (malignant or benign, and other information).
+
+The pre-processed dataset (center-crop to have only the birthmarks as the majority in the dataset, and omit plain skin parts) is available [here](https://drive.google.com/drive/folders/163Pxx-OQUoTW87xZ1VMHgldyd-E6uTWu?usp=sharing).
+
+## Models
+
+A trained segmentation and classification models are available [here](https://drive.google.com/drive/folders/163Pxx-OQUoTW87xZ1VMHgldyd-E6uTWu?usp=sharing).These are not trained exhaustively and may not yield the best possible result. 
+
 ## Segmentation 🔬
 
 ### Training🏋️
